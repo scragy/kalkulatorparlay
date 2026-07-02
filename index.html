@@ -38,7 +38,7 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             min-height: 100vh;
-            padding-bottom: 240px; /* Space for sticky summary */
+            padding-bottom: 170px; /* Diperkecil dari 240px agar space scroll pas */
             overflow-x: hidden;
         }
 
@@ -65,11 +65,11 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             padding: 10px 0;
         }
-        header svg { width: 32px; height: 32px; color: var(--primary); }
-        header h1 { font-size: 1.5rem; letter-spacing: -0.5px; }
+        header svg { width: 28px; height: 28px; color: var(--primary); }
+        header h1 { font-size: 1.35rem; letter-spacing: -0.5px; }
 
         /* General Inputs */
         input, select {
@@ -87,29 +87,26 @@
         input:focus, select:focus { border-color: var(--primary); background: rgba(0, 0, 0, 0.4); }
         
         /* Bet Section */
-        .bet-section { padding: 24px; margin-bottom: 24px; }
-        .bet-label { display: block; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
+        .bet-section { padding: 20px; margin-bottom: 20px; }
+        .bet-label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
         .bet-input-wrapper { position: relative; }
-        .bet-input-wrapper span { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; font-weight: 700; color: var(--primary); }
-        .bet-input-wrapper input { font-size: 1.75rem; font-weight: 700; padding-left: 50px; height: 60px; }
-
-        /* Controls / Generator */
-        .generator-grid { display: grid; grid-template-columns: 1fr auto; gap: 12px; margin-bottom: 24px; }
+        .bet-input-wrapper span { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 1.35rem; font-weight: 700; color: var(--primary); }
+        .bet-input-wrapper input { font-size: 1.5rem; font-weight: 700; padding-left: 50px; height: 55px; }
         
-        /* Match Cards */
-        .matches-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        /* Matches Container */
+        .matches-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
         .badge { background: rgba(59, 130, 246, 0.2); color: var(--primary); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; border: 1px solid rgba(59,130,246,0.3); }
         
         .match-card {
-            padding: 20px;
-            margin-bottom: 16px;
+            padding: 18px;
+            margin-bottom: 14px;
             animation: slideIn 0.4s ease forwards;
             position: relative;
             overflow: hidden;
         }
-        .match-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .match-number { font-size: 0.875rem; font-weight: 600; color: var(--text-muted); }
-        .btn-delete { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: var(--lose); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); }
+        .match-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .match-number { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+        .btn-delete { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: var(--lose); width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); }
         .btn-delete:hover { background: var(--lose); color: white; }
         
         .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
@@ -125,50 +122,46 @@
         /* Buttons */
         .btn {
             background: var(--surface); border: 1px solid var(--border); color: var(--text-main);
-            padding: 14px 20px; border-radius: var(--radius-md); font-size: 1rem; font-weight: 600;
+            padding: 14px 20px; border-radius: var(--radius-md); font-size: 0.95rem; font-weight: 600;
             cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
             transition: var(--transition); position: relative; overflow: hidden; width: 100%;
         }
         .btn:hover { background: var(--surface-hover); }
-        .btn-primary { background: var(--primary); border: none; }
-        .btn-primary:hover { background: var(--primary-hover); }
-        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; margin-bottom: 40px;}
+        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; margin-bottom: 20px;}
 
-        /* Sticky Summary */
+        /* Sticky Bottom Summary (UI Diperkecil & Lebih Slim) */
         .sticky-summary {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border); padding: 20px; z-index: 100;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-            transition: transform 0.3s ease;
+            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border); padding: 12px 16px; z-index: 100;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
         }
         .summary-container { max-width: 600px; margin: 0 auto; }
-        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 12px; }
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
         .summary-item { display: flex; flex-direction: column; }
-        .summary-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
-        .summary-value { font-size: 1.25rem; font-weight: 800; }
+        .summary-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.5px; }
+        .summary-value { font-size: 1.1rem; font-weight: 800; }
         
         .payout-box {
-            background: rgba(0,0,0,0.3); border-radius: var(--radius-md); padding: 16px;
+            background: rgba(0,0,0,0.3); border-radius: var(--radius-md); padding: 10px 14px;
             display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border);
         }
         .payout-box.profit-mode { border-color: rgba(16, 185, 129, 0.3); }
         .payout-box.loss-mode { border-color: rgba(239, 68, 68, 0.3); }
-        .payout-value { font-size: 1.75rem; font-weight: 800; }
+        .payout-value { font-size: 1.4rem; font-weight: 800; }
         
         /* Stats bar */
-        .stats-bar { display: flex; gap: 4px; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 16px; background: rgba(0,0,0,0.3); }
+        .stats-bar { display: flex; gap: 3px; height: 4px; border-radius: 2px; overflow: hidden; margin-bottom: 10px; background: rgba(0,0,0,0.3); }
         .stat-fill { height: 100%; transition: width 0.3s ease; }
 
         /* Colors */
         .c-win { color: var(--win); } .bg-win { background: var(--win); }
         .c-loss { color: var(--lose); } .bg-loss { background: var(--lose); }
         .c-warning { color: var(--half-lose); } .bg-warning { background: var(--half-lose); }
-        .c-info { color: var(--primary); }
 
         /* Animations */
         @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
         @keyframes fadeOut {
@@ -184,10 +177,10 @@
         }
         @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
 
-        /* Responsive */
+        /* Responsive Desktop adjustment */
         @media (min-width: 768px) {
-            body { padding-bottom: 40px; }
-            .sticky-summary { position: sticky; bottom: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border); margin-top: 40px; }
+            body { padding-bottom: 30px; }
+            .sticky-summary { position: sticky; bottom: 15px; border-radius: var(--radius-lg); border: 1px solid var(--border); margin-top: 30px; }
         }
     </style>
 </head>
@@ -212,14 +205,6 @@
                 </div>
             </section>
 
-            <section class="generator-grid">
-                <input type="number" id="genCount" min="1" max="20" placeholder="Jumlah Tim (Mis: 4)">
-                <button class="btn btn-primary" id="btnGenerate" onclick="generateCards()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-7-7h14"/></svg>
-                    Buat Card
-                </button>
-            </section>
-
             <div class="matches-header">
                 <h3>Daftar Pertandingan</h3>
                 <span class="badge" id="matchCountBadge">0 Tim Aktif</span>
@@ -228,8 +213,8 @@
             <div id="matchesContainer">
                 </div>
 
-            <button class="btn" id="btnAddMatch" style="margin-bottom: 24px;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-7-7h14"/></svg>
+            <button class="btn" id="btnAddMatch" style="margin-bottom: 16px; background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-7-7h14"/></svg>
                 Tambah 1 Pertandingan
             </button>
 
@@ -258,7 +243,7 @@
             <div class="payout-box" id="payoutBox">
                 <div>
                     <div class="summary-label" id="payoutLabel">Total Payout</div>
-                    <div class="summary-label" id="profitLabel" style="margin-top:4px; font-weight:600;">Profit: Rp 0</div>
+                    <div class="summary-label" id="profitLabel" style="margin-top:2px; font-weight:600; font-size:10px;">Profit: Rp 0</div>
                 </div>
                 <div class="payout-value" id="resPayout">Rp 0</div>
             </div>
@@ -268,21 +253,17 @@
 <script>
     /**
      * PRO PARLAY CALCULATOR ENGINE
-     * Single file implementation with LocalStorage
      */
 
-    // --- State Management ---
     let state = {
         bet: 10000,
         matches: []
     };
 
-    // --- DOM Elements ---
     const betInput = document.getElementById('betAmount');
     const matchesContainer = document.getElementById('matchesContainer');
     const badge = document.getElementById('matchCountBadge');
     
-    // Summary Elements
     const resOdds = document.getElementById('resOdds');
     const resROI = document.getElementById('resROI');
     const resPayout = document.getElementById('resPayout');
@@ -290,12 +271,9 @@
     const profitLabel = document.getElementById('profitLabel');
     const statsBar = document.getElementById('statsBar');
 
-    // --- Format & Helper Functions ---
     const formatNumber = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    const parseNumber = (str) => parseFloat(str.replace(/\./g, '')) || 0;
     const generateId = () => Math.random().toString(36).substr(2, 9);
 
-    // --- Core Logic & Calculation ---
     function calculate() {
         let totalOdds = 1;
         let isTotalLose = false;
@@ -306,7 +284,7 @@
 
         state.matches.forEach(m => {
             let odd = parseFloat(m.odd);
-            if (isNaN(odd) || odd < 1) odd = 1.00; // Validation fallback
+            if (isNaN(odd) || odd < 1) odd = 1.00;
 
             stats[m.status]++;
 
@@ -315,16 +293,12 @@
             } else if (m.status === 'win') {
                 totalOdds *= odd;
             } else if (m.status === 'half_win') {
-                // Half win formula: 1 + ((odd - 1) / 2)
                 totalOdds *= (1 + ((odd - 1) / 2));
             } else if (m.status === 'half_lose') {
                 halfLoseCount++;
-            } else if (m.status === 'draw') {
-                // Effective odd = 1.00 (multiply by 1, so no change)
             }
         });
 
-        // Apply Half Lose penalty (Payout cut by 50% for each half lose -> effective odd cut by 50%)
         if (isTotalLose || totalMatches === 0) {
             totalOdds = 0;
         } else {
@@ -339,13 +313,11 @@
         saveState();
     }
 
-    // --- UI Updaters ---
     function updateSummaryUI(odds, payout, profit, roi, stats, total) {
         resOdds.textContent = odds.toFixed(3);
         resPayout.textContent = `Rp ${formatNumber(Math.round(payout))}`;
-        
-        // ROI & Profit styling
         resROI.textContent = `${roi.toFixed(1)}%`;
+        
         if (profit > 0) {
             resROI.className = 'summary-value c-win';
             payoutBox.className = 'payout-box profit-mode';
@@ -365,7 +337,6 @@
 
         badge.textContent = `${total} Tim Aktif`;
 
-        // Update Progress/Stats Bar
         statsBar.innerHTML = '';
         if (total > 0) {
             const colors = { win: 'var(--win)', half_win: 'var(--half-win)', draw: 'var(--draw)', half_lose: 'var(--half-lose)', lose: 'var(--lose)' };
@@ -393,19 +364,18 @@
                 <div class="match-header">
                     <span class="match-number">Pertandingan #${index + 1}</span>
                     <button class="btn-delete" onclick="removeMatch('${match.id}')" title="Hapus">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     </button>
                 </div>
                 <input type="text" placeholder="Nama Tim (Opsional)" value="${match.name}" onchange="updateMatch('${match.id}', 'name', this.value)">
                 <div class="match-grid">
                     <div>
-                        <label class="bet-label" style="font-size: 10px;">Odd Desimal</label>
+                        <label class="bet-label" style="font-size: 10px; margin-bottom: 4px;">Odd Desimal</label>
                         <input type="number" step="0.01" min="1.00" inputmode="decimal" placeholder="Odd" value="${match.odd}" 
                             onblur="validateOdd(this, '${match.id}')" onchange="updateMatch('${match.id}', 'odd', this.value)">
                     </div>
-
                     <div>
-                        <label class="bet-label" style="font-size: 10px;">Hasil</label>
+                        <label class="bet-label" style="font-size: 10px; margin-bottom: 4px;">Hasil</label>
                         <select data-status="${match.status}" onchange="updateMatchStatus('${match.id}', this)">
                             <option value="win" ${match.status === 'win' ? 'selected' : ''}>Menang</option>
                             <option value="half_win" ${match.status === 'half_win' ? 'selected' : ''}>Menang 1/2</option>
@@ -421,7 +391,6 @@
         calculate();
     }
 
-    // --- Interaction Controllers ---
     window.updateMatch = (id, field, value) => {
         const match = state.matches.find(m => m.id === id);
         if (match) {
@@ -465,17 +434,6 @@
         renderMatches();
     });
 
-    window.generateCards = () => {
-        const countInput = document.getElementById('genCount');
-        let count = parseInt(countInput.value) || 0;
-        if(count > 20) count = 20; // Limit
-        
-        for(let i=0; i<count; i++) { addMatchObj(`Pertandingan ${state.matches.length + 1}`, 1.95, 'win'); }
-        countInput.value = '';
-        renderMatches();
-    };
-
-    // Bet Input Listener with Format
     betInput.addEventListener('input', (e) => {
         let raw = e.target.value.replace(/[^0-9]/g, '');
         if (raw === "") raw = "0";
@@ -484,7 +442,6 @@
         calculate();
     });
 
-    // Reset & Sample
     document.getElementById('btnReset').addEventListener('click', (e) => {
         createRipple(e);
         if(confirm('Reset semua data parlay?')) {
@@ -508,7 +465,6 @@
         renderMatches();
     });
 
-    // --- Ripple Effect ---
     function createRipple(event) {
         const button = event.currentTarget;
         const circle = document.createElement("span");
@@ -530,7 +486,6 @@
         btn.addEventListener('click', createRipple);
     });
 
-    // --- LocalStorage ---
     function saveState() {
         localStorage.setItem('parlayState', JSON.stringify(state));
     }
@@ -550,9 +505,7 @@
         renderMatches();
     }
 
-    // Initialize
     window.onload = loadState;
-
 </script>
 </body>
 </html>
