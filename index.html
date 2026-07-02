@@ -456,7 +456,7 @@
         let raw = e.target.value.replace(/[^0-9]/g, '');
         if (raw === "") raw = "0";
         state.bet = parseFloat(raw);
-        e.target.value = formatNumber(raw);
+        e.target.value = formatNumber(state.bet);
         calculate();
     });
 
