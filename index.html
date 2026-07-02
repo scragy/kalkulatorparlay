@@ -289,10 +289,10 @@
                     state.stake = parsed.stake || 10000;
                     state.matches = parsed.matches || [];
                 } catch (e) {
-                    loadDefaultMatches();
+                    state.matches = []; // Kalau ada error, buat kosong
                 }
             } else {
-                loadDefaultMatches();
+                state.matches = []; // Kalau belum pernah ada data, buat kosong
             }
             
             document.getElementById('stake-input').value = state.stake;
@@ -300,12 +300,9 @@
             calculate();
         };
 
+
         const loadDefaultMatches = () => {
-            state.matches = [
-                { id: generateId(), odd: "", status: "win" },
-                { id: generateId(), odd: "", status: "win" },
-                { id: generateId(), odd: "", status: "win" }
-            ];
+            state.matches = [];
         };
 
         const generateId = () => '_' + Math.random().toString(36).substr(2, 9);
