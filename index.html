@@ -370,10 +370,11 @@
                 <input type="text" placeholder="Nama Tim (Opsional)" value="${match.name}" onchange="updateMatch('${match.id}', 'name', this.value)">
                 <div class="match-grid">
                     <div>
-                        <label class="bet-label" style="font-size: 10px; margin-bottom: 4px;">Odd Desimal</label>
-                        <input type="number" step="0.01" min="1.00" inputmode="decimal" placeholder="Odd" value="${match.odd}" 
+                        <label class="bet-label" style="font-size: 10px;">Odd Desimal</label>
+                        <input type="number" step="0.01" min="1.00" placeholder="Odd" value="${match.odd}" 
                             onblur="validateOdd(this, '${match.id}')" onchange="updateMatch('${match.id}', 'odd', this.value)">
                     </div>
+
                     <div>
                         <label class="bet-label" style="font-size: 10px; margin-bottom: 4px;">Hasil</label>
                         <select data-status="${match.status}" onchange="updateMatchStatus('${match.id}', this)">
