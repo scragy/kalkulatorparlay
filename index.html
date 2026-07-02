@@ -235,7 +235,6 @@
     </div>
 
 <script>
-    // State management terpusat milik Code 2
     const state = {
         bet: 10000,
         matches: []
@@ -255,20 +254,14 @@
     const formatNumber = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     const generateId = () => Math.random().toString(36).substr(2, 9);
 
-    // Fungsi Inisialisasi Utama
+    // FUNGSI INIT YANG SUDAH DIUBAH - Selalu mulai dengan kondisi kosong
     function init() {
-        const saved = localStorage.getItem('parlay_state_v2');
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                state.bet = parsed.stake || parsed.bet || 10000;
-                state.matches = parsed.matches || [];
-            } catch (e) {
-                state.matches = [];
-            }
-        } else {
-            state.matches = [];
-        }
+        state.bet = 10000;
+        state.matches = []; // Memaksa daftar tim selalu kosong di awal
+        
+        // Membersihkan cache agar tidak ada sisa history pertandingan
+        localStorage.removeItem('parlay_state_v2'); 
+        
         betInput.value = formatNumber(state.bet);
         renderMatches();
     }
@@ -280,7 +273,6 @@
         }));
     }
 
-    // Fungsi perhitungan core matematika parlay terpadu
     function calculate() {
         let totalOdds = 1;
         let isTotalLose = false;
@@ -315,7 +307,6 @@
     }
 
     function updateSummaryUI(odds, payout, profit, roi, stats, total, isTotalLose) {
-        // Gabungan UI: Teks status tiket + nilai odds akhir
         if (total === 0) {
             resOdds.textContent = "0,000";
             resOdds.className = 'summary-value';
@@ -349,7 +340,6 @@
 
         badge.textContent = `${total} Tim Aktif`;
 
-        // Render stats bar warna warni dinamis
         statsBar.innerHTML = '';
         if (total > 0) {
             const colors = { win: 'var(--win)', half_win: 'var(--half-win)', draw: 'var(--draw)', half_lose: 'var(--half-lose)', lose: 'var(--lose)' };
@@ -457,7 +447,6 @@
         }
     };
 
-    // Event Listeners tombol utama
     document.getElementById('btnAddMatch').addEventListener('click', (e) => {
         createRipple(e);
         state.matches.push({ id: generateId(), name: "", odd: "", status: "win" });
