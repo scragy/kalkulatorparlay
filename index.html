@@ -302,9 +302,9 @@
 
         const loadDefaultMatches = () => {
             state.matches = [
-                { id: generateId(), odd: "1,85", status: "win" },
-                { id: generateId(), odd: "1,75", status: "win" },
-                { id: generateId(), odd: "1,90", status: "win" }
+                { id: generateId(), odd: "", status: "win" },
+                { id: generateId(), odd: "", status: "win" },
+                { id: generateId(), odd: "", status: "win" }
             ];
         };
 
@@ -441,10 +441,13 @@
 
         // Event Listeners tombol utama
         document.getElementById('btn-add').addEventListener('click', () => {
-            state.matches.push({ id: generateId(), odd: "1,85", status: "win" });
+            // Ubah odd menjadi "" (kosong)
+            state.matches.push({ id: generateId(), odd: "", status: "win" });
             renderMatches();
             calculate();
         });
+
+
 
         document.getElementById('btn-reset').addEventListener('click', () => {
             if (confirm('Reset ulang seluruh data parlay?')) {
