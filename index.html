@@ -38,7 +38,8 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             min-height: 100vh;
-            padding-bottom: 170px;
+            /* Jarak scroll bawah dikurangi agar tidak terlalu kosong */
+            padding-bottom: 90px; 
             overflow-x: hidden;
         }
 
@@ -121,28 +122,33 @@
         .btn:hover { background: var(--surface-hover); }
         .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; margin-bottom: 20px;}
 
+        /* STICKY SUMMARY COMPACT */
         .sticky-summary {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border); padding: 12px 16px; z-index: 100;
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border); padding: 12px 16px 16px; z-index: 100;
             box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
         }
-        .summary-container { max-width: 600px; margin: 0 auto; }
-        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
-        .summary-item { display: flex; flex-direction: column; }
-        .summary-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.5px; }
-        .summary-value { font-size: 1.1rem; font-weight: 800; }
         
-        .payout-box {
-            background: rgba(0,0,0,0.3); border-radius: var(--radius-md); padding: 10px 14px;
-            display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border);
+        /* Bar persentase warna diletakkan absolut menempel di garis atas */
+        .stats-bar { 
+            position: absolute; top: 0; left: 0; right: 0; 
+            display: flex; height: 3px; background: rgba(0,0,0,0.3); 
         }
-        .payout-box.profit-mode { border-color: rgba(16, 185, 129, 0.3); }
-        .payout-box.loss-mode { border-color: rgba(239, 68, 68, 0.3); }
-        .payout-value { font-size: 1.4rem; font-weight: 800; }
-        
-        .stats-bar { display: flex; gap: 3px; height: 4px; border-radius: 2px; overflow: hidden; margin-bottom: 10px; background: rgba(0,0,0,0.3); }
         .stat-fill { height: 100%; transition: width 0.3s ease; }
+        
+        /* Layout satu baris */
+        .summary-container { 
+            max-width: 600px; margin: 0 auto; 
+            display: flex; justify-content: space-between; align-items: center; 
+        }
+        
+        .summary-col { display: flex; flex-direction: column; justify-content: center; }
+        .summary-col.right { align-items: flex-end; text-align: right; }
+        
+        .summary-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .summary-value { font-size: 1.05rem; font-weight: 800; white-space: nowrap; margin: 3px 0; }
+        .payout-value { font-size: 1.2rem; font-weight: 800; margin: 3px 0; }
 
         .c-win { color: var(--win); } .bg-win { background: var(--win); }
         .c-loss { color: var(--lose); } .bg-loss { background: var(--lose); }
@@ -166,7 +172,7 @@
 
         @media (min-width: 768px) {
             body { padding-bottom: 30px; }
-            .sticky-summary { position: sticky; bottom: 15px; border-radius: var(--radius-lg); border: 1px solid var(--border); margin-top: 30px; }
+            .sticky-summary { position: sticky; bottom: 15px; border-radius: var(--radius-lg); border: 1px solid var(--border); margin-top: 30px; overflow: hidden;}
         }
     </style>
 </head>
@@ -210,26 +216,22 @@
         </main>
     </div>
 
+    <!-- UI SUMMARY YANG SUDAH DIRINGKAS -->
     <div class="sticky-summary">
+        <div class="stats-bar" id="statsBar"></div>
         <div class="summary-container">
-            <div class="stats-bar" id="statsBar"></div>
-            <div class="summary-grid">
-                <div class="summary-item">
-                    <span class="summary-label">Ticket Status / Total Odds</span>
-                    <span class="summary-value" id="resOdds">1,00</span>
-                </div>
-                <div class="summary-item">
-                    <span class="summary-label">ROI (%)</span>
-                    <span class="summary-value" id="resROI">0%</span>
-                </div>
+            <!-- Sisi Kiri: Status Tiket & ROI -->
+            <div class="summary-col">
+                <span class="summary-label">Status Tiket & Odds</span>
+                <span class="summary-value" id="resOdds">1,00</span>
+                <span class="summary-label" style="font-weight:600;">ROI: <span id="resROI">0%</span></span>
             </div>
             
-            <div class="payout-box" id="payoutBox">
-                <div>
-                    <div class="summary-label" id="payoutLabel">Total Payout</div>
-                    <div class="summary-label" id="profitLabel" style="margin-top:2px; font-weight:600; font-size:10px;">Profit: Rp 0</div>
-                </div>
-                <div class="payout-value" id="resPayout">Rp 0</div>
+            <!-- Sisi Kanan: Payout & Profit -->
+            <div class="summary-col right" id="payoutBox">
+                <span class="summary-label" style="color: var(--text-main);">Total Payout</span>
+                <span class="payout-value" id="resPayout">Rp 0</span>
+                <span class="summary-label" id="profitLabel" style="font-weight:600;">Profit: Rp 0</span>
             </div>
         </div>
     </div>
@@ -247,19 +249,16 @@
     const resOdds = document.getElementById('resOdds');
     const resROI = document.getElementById('resROI');
     const resPayout = document.getElementById('resPayout');
-    const payoutBox = document.getElementById('payoutBox');
     const profitLabel = document.getElementById('profitLabel');
     const statsBar = document.getElementById('statsBar');
 
     const formatNumber = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     const generateId = () => Math.random().toString(36).substr(2, 9);
 
-    // FUNGSI INIT YANG SUDAH DIUBAH - Selalu mulai dengan kondisi kosong
     function init() {
         state.bet = 10000;
-        state.matches = []; // Memaksa daftar tim selalu kosong di awal
+        state.matches = [];
         
-        // Membersihkan cache agar tidak ada sisa history pertandingan
         localStorage.removeItem('parlay_state_v2'); 
         
         betInput.value = formatNumber(state.bet);
@@ -311,7 +310,7 @@
             resOdds.textContent = "0,000";
             resOdds.className = 'summary-value';
         } else if (isTotalLose) {
-            resOdds.textContent = `LOSE TIKET (0,000)`;
+            resOdds.textContent = `LOSE (0,000)`;
             resOdds.className = 'summary-value c-loss';
         } else {
             resOdds.textContent = `TEMBUS (${odds.toFixed(3).replace('.', ',')})`;
@@ -322,20 +321,20 @@
         resROI.textContent = `${roi.toFixed(1).replace('.', ',')}%`;
         
         if (total > 0 && !isTotalLose && profit > 0) {
-            resROI.className = 'summary-value c-win';
-            payoutBox.className = 'payout-box profit-mode';
+            resROI.className = 'c-win';
             profitLabel.textContent = `Profit: Rp ${formatNumber(Math.floor(profit))}`;
             profitLabel.className = 'summary-label c-win';
+            resPayout.className = 'payout-value c-win';
         } else if (total > 0 && (isTotalLose || profit < 0)) {
-            resROI.className = 'summary-value c-loss';
-            payoutBox.className = 'payout-box loss-mode';
+            resROI.className = 'c-loss';
             profitLabel.textContent = `Loss: Rp ${formatNumber(Math.abs(Math.floor(profit)))}`;
             profitLabel.className = 'summary-label c-loss';
+            resPayout.className = 'payout-value c-loss';
         } else {
-            resROI.className = 'summary-value';
-            payoutBox.className = 'payout-box';
+            resROI.className = '';
             profitLabel.textContent = `Profit: Rp 0`;
             profitLabel.className = 'summary-label';
+            resPayout.className = 'payout-value';
         }
 
         badge.textContent = `${total} Tim Aktif`;
