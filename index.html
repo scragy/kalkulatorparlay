@@ -183,7 +183,6 @@
         </header>
 
         <main>
-            <!-- Bet Input Section -->
             <section class="glass bet-section">
                 <label class="bet-label">Nominal Taruhan (Bet)</label>
                 <div class="bet-input-wrapper">
@@ -192,17 +191,14 @@
                 </div>
             </section>
 
-            <!-- Matches Container -->
             <div class="matches-header">
                 <h3>Daftar Pertandingan</h3>
                 <span class="badge" id="matchCountBadge">0 Tim Aktif</span>
             </div>
             
             <div id="matchesContainer">
-                <!-- Match cards injected via JS -->
-            </div>
+                </div>
 
-            <!-- Add Single Match & Controls -->
             <button class="btn" id="btnAddMatch" style="margin-bottom: 16px; background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3);">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-7-7h14"/></svg>
                 Tambah 1 Pertandingan
@@ -215,12 +211,10 @@
         </main>
     </div>
 
-    <!-- Sticky Bottom Summary -->
     <div class="sticky-summary">
         <div class="summary-container">
             <div class="stats-bar" id="statsBar">
-                <!-- Progress bar injected via JS -->
-            </div>
+                </div>
             <div class="summary-grid">
                 <div class="summary-item">
                     <span class="summary-label">Total Odds</span>
@@ -265,16 +259,14 @@
     function calculate() {
         let totalOdds = 1;
         let isTotalLose = false;
-        let halfLoseCount = 0;
         
         let stats = { win: 0, half_win: 0, draw: 0, half_lose: 0, lose: 0 };
         const totalMatches = state.matches.length;
 
         state.matches.forEach(m => {
-            // Mengubah koma jadi titik sebelum kalkulasi matematik
             let cleanOdd = typeof m.odd === 'string' ? m.odd.replace(',', '.') : m.odd;
             let odd = parseFloat(cleanOdd);
-            if (isNaN(odd) || odd < 1) odd = 1.00;
+            if (isNaN(odd) || odd < 0) odd = 1.00; // diubah min 0 agar 0.5 valid
 
             stats[m.status]++;
 
@@ -285,14 +277,12 @@
             } else if (m.status === 'half_win') {
                 totalOdds *= (1 + ((odd - 1) / 2));
             } else if (m.status === 'half_lose') {
-                halfLoseCount++;
+                totalOdds *= 0.5; // EDIT: Langsung dikali 0.5 di sini sesuai permintaan
             }
         });
 
         if (isTotalLose || totalMatches === 0) {
             totalOdds = 0;
-        } else {
-            totalOdds *= Math.pow(0.5, halfLoseCount);
         }
 
         const payout = isTotalLose ? 0 : state.bet * totalOdds;
@@ -385,7 +375,6 @@
         const match = state.matches.find(m => m.id === id);
         if (match) {
             if (field === 'odd') {
-                // Bersihkan input selain angka, titik, dan koma
                 value = value.replace(/[^0-9.,]/g, '');
             }
             match[field] = value;
@@ -395,15 +384,34 @@
 
     window.updateMatchStatus = (id, selectEl) => {
         selectEl.setAttribute('data-status', selectEl.value);
-        updateMatch(id, 'status', selectEl.value);
+        
+        const match = state.matches.find(m => m.id === id);
+        if (match) {
+            match.status = selectEl.value;
+            
+            // EDIT: Jika pilih kalah 1/2, otomatis ubah nilai odd ke 0.5 di layar
+            if (selectEl.value === 'half_lose') {
+                match.odd = "0.5";
+                const card = document.getElementById(`match-${id}`);
+                if (card) {
+                    const oddInput = card.querySelector('input[inputmode="decimal"]');
+                    if (oddInput) oddInput.value = "0.5";
+                }
+            }
+            calculate();
+        }
     };
 
     window.validateOdd = (input, id) => {
-        // Ganti koma dengan titik untuk divalidasi oleh parseFloat
         let cleanVal = input.value.replace(',', '.');
         let val = parseFloat(cleanVal);
-        if (isNaN(val) || val < 1.00) {
-            val = 1.00;
+        const match = state.matches.find(m => m.id === id);
+        
+        // Batasan minimal diubah ke 0 agar nilai 0.5 tidak dipaksa balik ke 1.00
+        let minLimit = (match && match.status === 'half_lose') ? 0.00 : 1.00;
+        
+        if (isNaN(val) || val < minLimit) {
+            val = minLimit === 0 ? 0.5 : 1.00;
         }
         input.value = val;
         updateMatch(id, 'odd', input.value);
