@@ -379,11 +379,11 @@
                     <div>
                         <label class="bet-label" style="font-size: 10px; margin-bottom: 4px;">Hasil Pertandingan</label>
                         <select data-status="${match.status}" onchange="updateMatchStatus('${match.id}', this)">
-                            <option value="win" ${match.status === 'win' ? 'selected' : ''}>Menang Full</option>
-                            <option value="half_win" ${match.status === 'half_win' ? 'selected' : ''}>Menang 1/2</option>
-                            <option value="draw" ${match.status === 'draw' ? 'selected' : ''}>Draw (Seri)</option>
-                            <option value="half_lose" ${match.status === 'half_lose' ? 'selected' : ''}>Kalah 1/2</option>
-                            <option value="lose" ${match.status === 'lose' ? 'selected' : ''}>Kalah Full</option>
+                            <option value="win" ${match.status === 'win' ? 'selected' : ''}>Win Full</option>
+                            <option value="half_win" ${match.status === 'half_win' ? 'selected' : ''}>Win Half</option>
+                            <option value="draw" ${match.status === 'draw' ? 'selected' : ''}>Draw</option>
+                            <option value="half_lose" ${match.status === 'half_lose' ? 'selected' : ''}>Lose Half</option>
+                            <!-- <option value="lose" ${match.status === 'lose' ? 'selected' : ''}>Kalah Full</option>
                         </select>
                     </div>
                 </div>
@@ -409,28 +409,30 @@
         const match = state.matches.find(m => m.id === id);
         if (match) {
             match.status = selectEl.value;
-            if (selectEl.value === 'half_lose') {
-                match.odd = "0,5";
-                const card = document.getElementById(`match-${id}`);
-                if (card) {
-                    const oddInput = card.querySelector('input[inputmode="decimal"]');
-                    if (oddInput) oddInput.value = "0,5";
-                }
-            }
             calculate();
         }
     };
 
     window.validateOdd = (input, id) => {
+        const match = state.matches.find(m => m.id === id);
+        const isHalfLose = match && match.status === 'half_lose';
+
+        if (input.value.trim() === '') {
+            input.value = isHalfLose ? (match.odd || '') : '1,00';
+            updateMatch(id, 'odd', input.value);
+            return;
+        }
+
         let cleanVal = input.value.replace(',', '.');
         let val = parseFloat(cleanVal);
-        const match = state.matches.find(m => m.id === id);
-        
-        let minLimit = (match && match.status === 'half_lose') ? 0.00 : 1.00;
-        
+        const minLimit = isHalfLose ? 0 : 1;
+
         if (isNaN(val) || val < minLimit) {
-            val = minLimit === 0 ? 0.5 : 1.00;
+            input.value = isHalfLose ? (match.odd || '') : '1,00';
+            updateMatch(id, 'odd', input.value);
+            return;
         }
+
         input.value = val.toString().replace('.', ',');
         updateMatch(id, 'odd', input.value);
     };
