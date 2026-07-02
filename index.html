@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pro Parlay Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --surface: rgba(30, 41, 59, 0.7);
+            --surface-hover: rgba(45, 55, 72, 0.8);
+            --border: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --win: #10b981;
+            --half-win: #34d399;
+            --draw: #94a3b8;
+            --half-lose: #fbbf24;
+            --lose: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: 240px; /* Space for sticky summary */
+            overflow-x: hidden;
+        }
+
+        /* Typography & Layout */
+        h1, h2, h3, h4 { font-weight: 700; }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Glassmorphism Classes */
+        .glass {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding: 10px 0;
+        }
+        header svg { width: 32px; height: 32px; color: var(--primary); }
+        header h1 { font-size: 1.5rem; letter-spacing: -0.5px; }
+
+        /* General Inputs */
+        input, select {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+        input:focus, select:focus { border-color: var(--primary); background: rgba(0, 0, 0, 0.4); }
+        
+        /* Bet Section */
+        .bet-section { padding: 24px; margin-bottom: 24px; }
+        .bet-label { display: block; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
+        .bet-input-wrapper { position: relative; }
+        .bet-input-wrapper span { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .bet-input-wrapper input { font-size: 1.75rem; font-weight: 700; padding-left: 50px; height: 60px; }
+
+        /* Controls / Generator */
+        .generator-grid { display: grid; grid-template-columns: 1fr auto; gap: 12px; margin-bottom: 24px; }
+        
+        /* Match Cards */
+        .matches-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .badge { background: rgba(59, 130, 246, 0.2); color: var(--primary); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; border: 1px solid rgba(59,130,246,0.3); }
+        
+        .match-card {
+            padding: 20px;
+            margin-bottom: 16px;
+            animation: slideIn 0.4s ease forwards;
+            position: relative;
+            overflow: hidden;
+        }
+        .match-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .match-number { font-size: 0.875rem; font-weight: 600; color: var(--text-muted); }
+        .btn-delete { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: var(--lose); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition); }
+        .btn-delete:hover { background: var(--lose); color: white; }
+        
+        .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+        
+        /* Select dropdown styling colors */
+        select option { background: var(--bg-color); color: var(--text-main); }
+        select[data-status="win"] { color: var(--win); border-color: rgba(16, 185, 129, 0.3); }
+        select[data-status="half_win"] { color: var(--half-win); border-color: rgba(52, 211, 153, 0.3); }
+        select[data-status="draw"] { color: var(--draw); }
+        select[data-status="half_lose"] { color: var(--half-lose); border-color: rgba(251, 191, 36, 0.3); }
+        select[data-status="lose"] { color: var(--lose); border-color: rgba(239, 68, 68, 0.3); }
+
+        /* Buttons */
+        .btn {
+            background: var(--surface); border: 1px solid var(--border); color: var(--text-main);
+            padding: 14px 20px; border-radius: var(--radius-md); font-size: 1rem; font-weight: 600;
+            cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            transition: var(--transition); position: relative; overflow: hidden; width: 100%;
+        }
+        .btn:hover { background: var(--surface-hover); }
+        .btn-primary { background: var(--primary); border: none; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; margin-bottom: 40px;}
+
+        /* Sticky Summary */
+        .sticky-summary {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border); padding: 20px; z-index: 100;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+        }
+        .summary-container { max-width: 600px; margin: 0 auto; }
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 12px; }
+        .summary-item { display: flex; flex-direction: column; }
+        .summary-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+        .summary-value { font-size: 1.25rem; font-weight: 800; }
+        
+        .payout-box {
+            background: rgba(0,0,0,0.3); border-radius: var(--radius-md); padding: 16px;
+            display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border);
+        }
+        .payout-box.profit-mode { border-color: rgba(16, 185, 129, 0.3); }
+        .payout-box.loss-mode { border-color: rgba(239, 68, 68, 0.3); }
+        .payout-value { font-size: 1.75rem; font-weight: 800; }
+        
+        /* Stats bar */
+        .stats-bar { display: flex; gap: 4px; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 16px; background: rgba(0,0,0,0.3); }
+        .stat-fill { height: 100%; transition: width 0.3s ease; }
+
+        /* Colors */
+        .c-win { color: var(--win); } .bg-win { background: var(--win); }
+        .c-loss { color: var(--lose); } .bg-loss { background: var(--lose); }
+        .c-warning { color: var(--half-lose); } .bg-warning { background: var(--half-lose); }
+        .c-info { color: var(--primary); }
+
+        /* Animations */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.95); }
+        }
+        .removing { animation: fadeOut 0.3s ease forwards; }
+
+        /* Ripple Effect */
+        .ripple {
+            position: absolute; border-radius: 50%; transform: scale(0);
+            animation: ripple-anim 0.6s linear; background-color: rgba(255, 255, 255, 0.3);
+        }
+        @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            body { padding-bottom: 40px; }
+            .sticky-summary { position: sticky; bottom: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border); margin-top: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+                <path d="M2 12h20"></path>
+            </svg>
+            <h1>Pro Parlay</h1>
+        </header>
+
+        <main>
+            <section class="glass bet-section">
+                <label class="bet-label">Nominal Taruhan (Bet)</label>
+                <div class="bet-input-wrapper">
+                    <span>Rp</span>
+                    <input type="text" id="betAmount" inputmode="numeric" value="10.000" placeholder="10.000">
+                </div>
+            </section>
+
+            <section class="generator-grid">
+                <input type="number" id="genCount" min="1" max="20" placeholder="Jumlah Tim (Mis: 4)">
+                <button class="btn btn-primary" id="btnGenerate" onclick="generateCards()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-7-7h14"/></svg>
+                    Buat Card
+                </button>
+            </section>
+
+            <div class="matches-header">
+                <h3>Daftar Pertandingan</h3>
+                <span class="badge" id="matchCountBadge">0 Tim Aktif</span>
+            </div>
+            
+            <div id="matchesContainer">
+                </div>
+
+            <button class="btn" id="btnAddMatch" style="margin-bottom: 24px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-7-7h14"/></svg>
+                Tambah 1 Pertandingan
+            </button>
+
+            <div class="action-buttons">
+                <button class="btn" id="btnSample">Data Contoh</button>
+                <button class="btn" id="btnReset">Reset Semua</button>
+            </div>
+        </main>
+    </div>
+
+    <div class="sticky-summary">
+        <div class="summary-container">
+            <div class="stats-bar" id="statsBar">
+                </div>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <span class="summary-label">Total Odds</span>
+                    <span class="summary-value" id="resOdds">1.00</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">ROI (%)</span>
+                    <span class="summary-value" id="resROI">0%</span>
+                </div>
+            </div>
+            
+            <div class="payout-box" id="payoutBox">
+                <div>
+                    <div class="summary-label" id="payoutLabel">Total Payout</div>
+                    <div class="summary-label" id="profitLabel" style="margin-top:4px; font-weight:600;">Profit: Rp 0</div>
+                </div>
+                <div class="payout-value" id="resPayout">Rp 0</div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    /**
+     * PRO PARLAY CALCULATOR ENGINE
+     * Single file implementation with LocalStorage
+     */
+
+    // --- State Management ---
+    let state = {
+        bet: 10000,
+        matches: []
+    };
+
+    // --- DOM Elements ---
+    const betInput = document.getElementById('betAmount');
+    const matchesContainer = document.getElementById('matchesContainer');
+    const badge = document.getElementById('matchCountBadge');
+    
+    // Summary Elements
+    const resOdds = document.getElementById('resOdds');
+    const resROI = document.getElementById('resROI');
+    const resPayout = document.getElementById('resPayout');
+    const payoutBox = document.getElementById('payoutBox');
+    const profitLabel = document.getElementById('profitLabel');
+    const statsBar = document.getElementById('statsBar');
+
+    // --- Format & Helper Functions ---
+    const formatNumber = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    const parseNumber = (str) => parseFloat(str.replace(/\./g, '')) || 0;
+    const generateId = () => Math.random().toString(36).substr(2, 9);
+
+    // --- Core Logic & Calculation ---
+    function calculate() {
+        let totalOdds = 1;
+        let isTotalLose = false;
+        let halfLoseCount = 0;
+        
+        let stats = { win: 0, half_win: 0, draw: 0, half_lose: 0, lose: 0 };
+        const totalMatches = state.matches.length;
+
+        state.matches.forEach(m => {
+            let odd = parseFloat(m.odd);
+            if (isNaN(odd) || odd < 1) odd = 1.00; // Validation fallback
+
+            stats[m.status]++;
+
+            if (m.status === 'lose') {
+                isTotalLose = true;
+            } else if (m.status === 'win') {
+                totalOdds *= odd;
+            } else if (m.status === 'half_win') {
+                // Half win formula: 1 + ((odd - 1) / 2)
+                totalOdds *= (1 + ((odd - 1) / 2));
+            } else if (m.status === 'half_lose') {
+                halfLoseCount++;
+            } else if (m.status === 'draw') {
+                // Effective odd = 1.00 (multiply by 1, so no change)
+            }
+        });
+
+        // Apply Half Lose penalty (Payout cut by 50% for each half lose -> effective odd cut by 50%)
+        if (isTotalLose || totalMatches === 0) {
+            totalOdds = 0;
+        } else {
+            totalOdds *= Math.pow(0.5, halfLoseCount);
+        }
+
+        const payout = isTotalLose ? 0 : state.bet * totalOdds;
+        const profit = payout - state.bet;
+        const roi = state.bet > 0 ? (profit / state.bet) * 100 : 0;
+
+        updateSummaryUI(totalOdds, payout, profit, roi, stats, totalMatches);
+        saveState();
+    }
+
+    // --- UI Updaters ---
+    function updateSummaryUI(odds, payout, profit, roi, stats, total) {
+        resOdds.textContent = odds.toFixed(3);
+        resPayout.textContent = `Rp ${formatNumber(Math.round(payout))}`;
+        
+        // ROI & Profit styling
+        resROI.textContent = `${roi.toFixed(1)}%`;
+        if (profit > 0) {
+            resROI.className = 'summary-value c-win';
+            payoutBox.className = 'payout-box profit-mode';
+            profitLabel.textContent = `Profit: Rp ${formatNumber(Math.round(profit))}`;
+            profitLabel.className = 'summary-label c-win';
+        } else if (profit < 0) {
+            resROI.className = 'summary-value c-loss';
+            payoutBox.className = 'payout-box loss-mode';
+            profitLabel.textContent = `Loss: Rp ${formatNumber(Math.round(Math.abs(profit)))}`;
+            profitLabel.className = 'summary-label c-loss';
+        } else {
+            resROI.className = 'summary-value';
+            payoutBox.className = 'payout-box';
+            profitLabel.textContent = `Profit: Rp 0`;
+            profitLabel.className = 'summary-label';
+        }
+
+        badge.textContent = `${total} Tim Aktif`;
+
+        // Update Progress/Stats Bar
+        statsBar.innerHTML = '';
+        if (total > 0) {
+            const colors = { win: 'var(--win)', half_win: 'var(--half-win)', draw: 'var(--draw)', half_lose: 'var(--half-lose)', lose: 'var(--lose)' };
+            for (const [key, val] of Object.entries(stats)) {
+                if (val > 0) {
+                    const div = document.createElement('div');
+                    div.className = 'stat-fill';
+                    div.style.width = `${(val/total)*100}%`;
+                    div.style.backgroundColor = colors[key];
+                    statsBar.appendChild(div);
+                }
+            }
+        } else {
+            statsBar.innerHTML = `<div class="stat-fill" style="width: 100%; background: var(--surface-hover);"></div>`;
+        }
+    }
+
+    function renderMatches() {
+        matchesContainer.innerHTML = '';
+        state.matches.forEach((match, index) => {
+            const card = document.createElement('div');
+            card.className = 'glass match-card';
+            card.id = `match-${match.id}`;
+            card.innerHTML = `
+                <div class="match-header">
+                    <span class="match-number">Pertandingan #${index + 1}</span>
+                    <button class="btn-delete" onclick="removeMatch('${match.id}')" title="Hapus">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
+                </div>
+                <input type="text" placeholder="Nama Tim (Opsional)" value="${match.name}" onchange="updateMatch('${match.id}', 'name', this.value)">
+                <div class="match-grid">
+                    <div>
+                        <label class="bet-label" style="font-size: 10px;">Odd Desimal</label>
+                        <input type="number" step="0.01" min="1.00" placeholder="Odd" value="${match.odd}" 
+                            onblur="validateOdd(this, '${match.id}')" onchange="updateMatch('${match.id}', 'odd', this.value)">
+                    </div>
+                    <div>
+                        <label class="bet-label" style="font-size: 10px;">Hasil</label>
+                        <select data-status="${match.status}" onchange="updateMatchStatus('${match.id}', this)">
+                            <option value="win" ${match.status === 'win' ? 'selected' : ''}>Menang</option>
+                            <option value="half_win" ${match.status === 'half_win' ? 'selected' : ''}>Menang 1/2</option>
+                            <option value="draw" ${match.status === 'draw' ? 'selected' : ''}>Seri (Void)</option>
+                            <option value="half_lose" ${match.status === 'half_lose' ? 'selected' : ''}>Kalah 1/2</option>
+                            <option value="lose" ${match.status === 'lose' ? 'selected' : ''}>Kalah</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            matchesContainer.appendChild(card);
+        });
+        calculate();
+    }
+
+    // --- Interaction Controllers ---
+    window.updateMatch = (id, field, value) => {
+        const match = state.matches.find(m => m.id === id);
+        if (match) {
+            match[field] = value;
+            calculate();
+        }
+    };
+
+    window.updateMatchStatus = (id, selectEl) => {
+        selectEl.setAttribute('data-status', selectEl.value);
+        updateMatch(id, 'status', selectEl.value);
+    };
+
+    window.validateOdd = (input, id) => {
+        let val = parseFloat(input.value);
+        if (isNaN(val) || val < 1.00) {
+            val = 1.00;
+            input.value = "1.00";
+        }
+        updateMatch(id, 'odd', val);
+    };
+
+    window.removeMatch = (id) => {
+        const el = document.getElementById(`match-${id}`);
+        if(el) {
+            el.classList.add('removing');
+            setTimeout(() => {
+                state.matches = state.matches.filter(m => m.id !== id);
+                renderMatches();
+            }, 300);
+        }
+    };
+
+    function addMatchObj(name = "", odd = 1.85, status = "win") {
+        state.matches.push({ id: generateId(), name, odd, status });
+    }
+
+    document.getElementById('btnAddMatch').addEventListener('click', (e) => {
+        createRipple(e);
+        addMatchObj();
+        renderMatches();
+    });
+
+    window.generateCards = () => {
+        const countInput = document.getElementById('genCount');
+        let count = parseInt(countInput.value) || 0;
+        if(count > 20) count = 20; // Limit
+        
+        for(let i=0; i<count; i++) { addMatchObj(`Pertandingan ${state.matches.length + 1}`, 1.95, 'win'); }
+        countInput.value = '';
+        renderMatches();
+    };
+
+    // Bet Input Listener with Format
+    betInput.addEventListener('input', (e) => {
+        let raw = e.target.value.replace(/[^0-9]/g, '');
+        if (raw === "") raw = "0";
+        state.bet = parseFloat(raw);
+        e.target.value = formatNumber(raw);
+        calculate();
+    });
+
+    // Reset & Sample
+    document.getElementById('btnReset').addEventListener('click', (e) => {
+        createRipple(e);
+        if(confirm('Reset semua data parlay?')) {
+            state.matches = [];
+            state.bet = 10000;
+            betInput.value = "10.000";
+            renderMatches();
+        }
+    });
+
+    document.getElementById('btnSample').addEventListener('click', (e) => {
+        createRipple(e);
+        state.bet = 50000;
+        betInput.value = "50.000";
+        state.matches = [
+            { id: generateId(), name: "Real Madrid vs Barca", odd: 1.85, status: "win" },
+            { id: generateId(), name: "Arsenal vs City", odd: 2.10, status: "half_win" },
+            { id: generateId(), name: "Juventus vs Milan", odd: 1.95, status: "draw" },
+            { id: generateId(), name: "Bayern vs Dortmund", odd: 1.70, status: "win" }
+        ];
+        renderMatches();
+    });
+
+    // --- Ripple Effect ---
+    function createRipple(event) {
+        const button = event.currentTarget;
+        const circle = document.createElement("span");
+        const diameter = Math.max(button.clientWidth, button.clientHeight);
+        const radius = diameter / 2;
+        
+        const rect = button.getBoundingClientRect();
+        circle.style.width = circle.style.height = `${diameter}px`;
+        circle.style.left = `${event.clientX - rect.left - radius}px`;
+        circle.style.top = `${event.clientY - rect.top - radius}px`;
+        circle.classList.add("ripple");
+        
+        const ripple = button.getElementsByClassName("ripple")[0];
+        if (ripple) { ripple.remove(); }
+        button.appendChild(circle);
+    }
+    
+    document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('click', createRipple);
+    });
+
+    // --- LocalStorage ---
+    function saveState() {
+        localStorage.setItem('parlayState', JSON.stringify(state));
+    }
+
+    function loadState() {
+        const saved = localStorage.getItem('parlayState');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                state.bet = parsed.bet || 10000;
+                state.matches = parsed.matches || [];
+                betInput.value = formatNumber(state.bet);
+            } catch (e) {
+                console.error("Gagal load state", e);
+            }
+        }
+        renderMatches();
+    }
+
+    // Initialize
+    window.onload = loadState;
+
+</script>
+</body>
+</html>
