@@ -222,7 +222,7 @@
         <div class="summary-container">
             <!-- Sisi Kiri: Status Tiket & ROI -->
             <div class="summary-col">
-               <!-- <span class="summary-label">Status Tiket & Odds</span> -->
+                <span class="summary-label">Total Odds</span>
                 <span class="summary-value" id="resOdds">1,00</span>
                <!-- <span class="summary-label" style="font-weight:600;">ROI: <span id="resROI">0%</span></span> -->
             </div>
@@ -313,7 +313,7 @@
             resOdds.textContent = `LOSE (0,000)`;
             resOdds.className = 'summary-value c-loss';
         } else {
-            resOdds.textContent = `TOTAL ODDS (${odds.toFixed(3).replace('.', ',')})`;
+            resOdds.textContent = `(${odds.toFixed(3).replace('.', ',')})`;
             resOdds.className = 'summary-value c-win';
         }
 
